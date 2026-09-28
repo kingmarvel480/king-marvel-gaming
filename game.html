@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>King Marvel Gaming - Game</title>
+
+    <style>
+        body {
+            background-color: #111;
+            color: white;
+            text-align: center;
+            font-family: Arial;
+            padding-top: 50px;
+        }
+
+        h1 {
+            color: yellow;
+            font-size: 45px;
+        }
+
+        #level {
+            font-size: 30px;
+            color: cyan;
+        }
+
+        #timer,
+        #score,
+        #bestScore {
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        #timer {
+            color: red;
+        }
+
+        #score {
+            color: yellow;
+        }
+
+        #bestScore {
+            color: gold;
+        }
+
+        #message {
+            font-size: 28px;
+            color: lime;
+            font-weight: bold;
+            min-height: 40px;
+        }
+
+        button {
+            background-color: yellow;
+            color: black;
+            padding: 15px 30px;
+            font-size: 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        button:hover {
+            background-color: orange;
+        }
+
+        button:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+
+        #scoreButton {
+            display: none;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 15px 30px;
+            background-color: white;
+            color: black;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🎮 KING MARVEL GAMING 🎮</h1>
+
+    <div id="level">LEVEL 1</div>
+
+    <p>Time:</p>
+    <div id="timer">10</div>
+
+    <p>Score:</p>
+    <div id="score">0</div>
+
+    <p>🏆 Best Score:</p>
+    <div id="bestScore">0</div>
+
+    <div id="message">Press START GAME to begin!</div>
+
+    <button id="startButton" onclick="startGame()">
+        🎮 START GAME
+    </button>
+
+    <br>
+
+    <button id="scoreButton" onclick="increaseScore()">
+        🔥 SCORE +1
+    </button>
+
+    <br>
+
+    <button onclick="resetGame()">
+        🔄 RESET GAME
+    </button>
+
+    <br>
+
+    <a href="index.html">
+        ⬅ Back to Home
+    </a>
+
+    <script>
+
+        let score = 0;
+        let time = 10;
+        let level = 1;
+        let target = 10;
+        let gameOver = false;
+        let gameStarted = false;
+        let timer;
+
+        let bestScore = localStorage.getItem("bestScore");
+
+        if (bestScore === null) {
+            bestScore = 0;
+        }
+
+        document.getElementById("bestScore").innerHTML = bestScore;
+
+
+        function startGame() {
+
+            score = 0;
+            time = 10;
+            level = 1;
+            target = 10;
+            gameOver = false;
+            gameStarted = true;
+
+            document.getElementById("score").innerHTML = score;
+            document.getElementById("timer").innerHTML = time;
+            document.getElementById("level").innerHTML = "LEVEL 1";
+            document.getElementById("message").innerHTML =
+                "🔥 GO! 🔥";
+
+            document.getElementById("startButton").style.display = "none";
+            document.getElementById("scoreButton").style.display =
+                "inline-block";
+
+            clearInterval(timer);
+
+            timer = setInterval(function() {
+
+                if (time > 0 && !gameOver) {
+                    time = time - 1;
+
+                    document.getElementById("timer").innerHTML =
+                        time;
+                }
+
+                if (time === 0 && !gameOver) {
+
+                    gameOver = true;
+
+                    saveBestScore();
+
+                    document.getElementById("message").innerHTML =
+                        "⏰ TIME'S UP!";
+
+                    document.getElementById("scoreButton").disabled =
+                        true;
+
+                    document.getElementById("startButton").style.display =
+                        "inline-block";
+                }
+
+            }, 1000);
+        }
+
+
+        function increaseScore() {
+
+            if (!gameStarted || gameOver) {
+                return;
+            }
+
+            score = score + 1;
+
+            document.getElementById("score").innerHTML = score;
+
+            saveBestScore();
+
+            if (score === target) {
+
+                if (level === 1) {
+
+                    level = 2;
+                    target = 15;
+                    time = 8;
+                    score = 0;
+
+                    document.getElementById("level").innerHTML =
+                        "LEVEL 2";
+
+                    document.getElementById("message").innerHTML =
+                        "🔥 LEVEL 2! 🔥";
+
+                    document.getElementById("score").innerHTML =
+                        score;
+
+                    document.getElementById("timer").innerHTML =
+                        time;
+
+                } else if (level === 2) {
+
+                    level = 3;
+                    target = 20;
+                    time = 6;
+                    score = 0;
+
+                    document.getElementById("level").innerHTML =
+                        "LEVEL 3";
+
+                    document.getElementById("message").innerHTML =
+                        "🔥 LEVEL 3! 🔥";
+
+                    document.getElementById("score").innerHTML =
+                        score;
+
+                    document.getElementById("timer").innerHTML =
+                        time;
+
+                } else {
+
+                    gameOver = true;
+
+                    saveBestScore();
+
+                    document.getElementById("message").innerHTML =
+                        "🏆 YOU BEAT ALL 3 LEVELS! 🏆";
+
+                    document.getElementById("scoreButton").disabled =
+                        true;
+
+                    document.getElementById("startButton").style.display =
+                        "inline-block";
+                }
+            }
+        }
+
+
+        function saveBestScore() {
+
+            if (score > Number(bestScore)) {
+
+                bestScore = score;
+
+                localStorage.setItem("bestScore", bestScore);
+
+                document.getElementById("bestScore").innerHTML =
+                    bestScore;
+            }
+        }
+
+
+        function resetGame() {
+
+            clearInterval(timer);
+
+            score = 0;
+            time = 10;
+            level = 1;
+            target = 10;
+            gameOver = false;
+            gameStarted = false;
+
+            document.getElementById("level").innerHTML =
+                "LEVEL 1";
+
+            document.getElementById("timer").innerHTML =
+                "10";
+
+            document.getElementById("score").innerHTML =
+                "0";
+
+            document.getElementById("message").innerHTML =
+                "Press START GAME to begin!";
+
+            document.getElementById("startButton").style.display =
+                "inline-block";
+
+            document.getElementById("scoreButton").style.display =
+                "none";
+
+            document.getElementById("scoreButton").disabled =
+                false;
+        }
+
+    </script>
+
+</body>
+</html>
